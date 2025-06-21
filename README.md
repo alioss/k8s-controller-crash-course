@@ -75,16 +75,24 @@ alias k=kubectl
   * [x] Use PersistentFlags for global log level control across all commands
   * [x] Demonstrate comprehensive logging at all verbosity levels
 
+- [x] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
+  * [x] Add server command using FastHTTP instead of net/http
+  * [x] Implement configurable port and host flags (--port)
+  * [x] Add structured logging for HTTP requests and responses
+  * [x] Create simple routing system with switch statement
+  * [x] Add /health endpoint returning JSON status
+  * [x] Implement 404 handling with JSON error responses
+  * [x] Set appropriate Content-Type headers for different endpoints
+
 ### 🔄 In Progress
 
-- [ ] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
-  * [ ] Add server command using FastHTTP instead of net/http
-  * [ ] Implement configurable port and host flags
-  * [ ] Add health check and metrics endpoints
+- [ ] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
+  * [ ] Create Makefile for build automation
+  * [ ] Add Dockerfile for containerization
+  * [ ] Setup GitHub Actions workflow for CI/CD
 
 ### 📋 Todo
 
-- [ ] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
 - [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
 - [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
 - [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
