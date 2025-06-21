@@ -67,16 +67,23 @@ alias k=kubectl
   * [x] Implement structured fields (cluster_name, version, username, etc.)
   * [x] Demonstrate zerolog fluent API with method chaining
 
+- [x] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
+  * [x] Add --log-level flag to control zerolog output level
+  * [x] Implement flag validation for valid log levels (trace, debug, info, warn, error)
+  * [x] Configure dynamic log level switching with zerolog.SetGlobalLevel()
+  * [x] Add different output formats based on log level (console vs JSON)
+  * [x] Use PersistentFlags for global log level control across all commands
+  * [x] Demonstrate comprehensive logging at all verbosity levels
+
 ### 🔄 In Progress
 
-- [ ] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
-  * [ ] Add --log-level flag to control zerolog output level
-  * [ ] Implement flag validation for valid log levels
-  * [ ] Configure dynamic log level switching
+- [ ] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
+  * [ ] Add server command using FastHTTP instead of net/http
+  * [ ] Implement configurable port and host flags
+  * [ ] Add health check and metrics endpoints
 
 ### 📋 Todo
 
-- [ ] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
 - [ ] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
 - [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
 - [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
