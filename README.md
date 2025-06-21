@@ -84,16 +84,24 @@ alias k=kubectl
   * [x] Implement 404 handling with JSON error responses
   * [x] Set appropriate Content-Type headers for different endpoints
 
+- [x] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
+  * [x] Create Makefile for build automation (build, test, run, docker-build targets)
+  * [x] Add multi-stage Dockerfile for optimized containerization
+  * [x] Setup GitHub Actions workflow for comprehensive CI/CD pipeline
+  * [x] Implement Docker security scanning with Trivy
+  * [x] Add Helm chart packaging and artifact upload
+  * [x] Configure cross-platform build support
+  * [x] Add automated testing and code quality checks
+
 ### 🔄 In Progress
 
-- [ ] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
-  * [ ] Create Makefile for build automation
-  * [ ] Add Dockerfile for containerization
-  * [ ] Setup GitHub Actions workflow for CI/CD
+- [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
+  * [ ] Add client-go dependency for Kubernetes API access
+  * [ ] Implement deployment listing functionality
+  * [ ] Add kubeconfig handling and cluster connectivity
 
 ### 📋 Todo
 
-- [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
 - [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
 - [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
 - [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
