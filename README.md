@@ -4,11 +4,11 @@ A starter template for building Kubernetes controllers or CLI tools in Go using 
 
 ## Features
 
-✅ **Cobra CLI Framework** - Professional command-line interface  
-✅ **Version Flag** - `--version` / `-v` to show application version  
-✅ **Multiple Commands** - `go-basic` and `status` commands  
-✅ **Go Structs & Methods** - Learn Go fundamentals  
-✅ **Unit Tests** - Test coverage for struct methods  
+✅ **Cobra CLI Framework** - Professional command-line interface
+✅ **Version Flag** - `--version` / `-v` to show application version
+✅ **Multiple Commands** - `go-basic` and `status` commands
+✅ **Go Structs & Methods** - Learn Go fundamentals
+✅ **Unit Tests** - Test coverage for struct methods
 
 ## Prerequisites
 
@@ -124,10 +124,11 @@ This is **Step 1** in the Kubernetes Controller tutorial series:
 
 - ✅ **Step 1:** Golang CLI Application using Cobra *(current)*
 - 🔄 **Step 2:** Zerolog for Log Levels
-- 🔄 **Step 3:** pflag for Log Level Flags  
+- 🔄 **Step 3:** pflag for Log Level Flags
 - 🔄 **Step 4:** FastHTTP Server Command
 - 🔄 **Step 5:** Makefile, Dockerfile, and GitHub Workflow
 
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
+#
