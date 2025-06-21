@@ -57,18 +57,25 @@ alias k=kubectl
   * [x] Create go-basic command with Kubernetes struct
   * [x] Add version flag (--version, -v)
   * [x] Create status command with cluster information
+  * [x] Add unit tests for struct methods
   * [x] Update project documentation
+
+- [x] **Step 2: Zerolog for Log Levels** — Add structured logging with zerolog
+  * [x] Replace fmt.Println with structured logging in go-basic command
+  * [x] Configure different log levels (trace, debug, info, warn, error)
+  * [x] Add JSON log formatting for all commands
+  * [x] Implement structured fields (cluster_name, version, username, etc.)
+  * [x] Demonstrate zerolog fluent API with method chaining
 
 ### 🔄 In Progress
 
-- [ ] **Step 2: Zerolog for Log Levels** — Add structured logging with zerolog
-  * [ ] Replace fmt.Println with structured logging
-  * [ ] Configure different log levels (trace, debug, info, warn, error)
-  * [ ] Add JSON log formatting
+- [ ] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
+  * [ ] Add --log-level flag to control zerolog output level
+  * [ ] Implement flag validation for valid log levels
+  * [ ] Configure dynamic log level switching
 
 ### 📋 Todo
 
-- [ ] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
 - [ ] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
 - [ ] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
 - [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
