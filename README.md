@@ -93,16 +93,25 @@ alias k=kubectl
   * [x] Configure cross-platform build support
   * [x] Add automated testing and code quality checks
 
+- [x] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
+  * [x] Add client-go dependency for Kubernetes API access
+  * [x] Implement deployment listing functionality with detailed information
+  * [x] Add kubeconfig handling and cluster connectivity
+  * [x] Create colorful status indicators with emoji (✅ ⚠️ ❌ ⏸️)
+  * [x] Display replica status, container images, and deployment age
+  * [x] Add comprehensive summary statistics (ready deployments, running pods)
+  * [x] Implement structured logging for debugging and troubleshooting
+  * [x] Add professional deployment overview with human-readable formatting
+
 ### 🔄 In Progress
 
-- [ ] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
-  * [ ] Add client-go dependency for Kubernetes API access
-  * [ ] Implement deployment listing functionality
-  * [ ] Add kubeconfig handling and cluster connectivity
+- [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
+  * [ ] Implement Kubernetes Informer pattern for real-time events
+  * [ ] Add event watching and logging for deployment changes
+  * [ ] Create event handlers for add, update, delete operations
 
 ### 📋 Todo
 
-- [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
 - [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
 - [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
 - [ ] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
