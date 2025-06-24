@@ -113,16 +113,25 @@ alias k=kubectl
   * [x] Verify real-time event detection and proper informer lifecycle
   * [x] Establish foundation for production Kubernetes controller development
 
+- [x] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
+  * [x] Create HTTP endpoint to expose cached deployment data
+  * [x] Integrate informer cache with REST API responses
+  * [x] Add JSON serialization for deployment information
+  * [x] Implement request ID tracking with UUID for better debugging
+  * [x] Add /nodes endpoint for cluster-wide node information
+  * [x] Create dual informer setup (deployments + nodes) running concurrently
+  * [x] Add structured logging for API requests with contextual information
+  * [x] Demonstrate efficient API responses using in-memory informer cache
+
 ### 🔄 In Progress
 
-- [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
-  * [ ] Create HTTP endpoint to expose cached deployment data
-  * [ ] Integrate informer cache with REST API responses
-  * [ ] Add JSON serialization for deployment information
+- [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
+  * [ ] Implement controller-runtime framework integration
+  * [ ] Create reconciliation loop for deployment management
+  * [ ] Add custom controller logic with event handling
 
 ### 📋 Todo
 
-- [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
 - [ ] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
 - [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
 - [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
