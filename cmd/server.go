@@ -32,6 +32,7 @@ var serverCmd = &cobra.Command{
 		}
 		ctx := context.Background()
 		go informer.StartDeploymentInformer(ctx, clientset)
+		go informer.StartNodeInformer(ctx, clientset)
 
 		handler := func(ctx *fasthttp.RequestCtx) {
 			requestID := uuid.New().String()
@@ -50,6 +51,23 @@ var serverCmd = &cobra.Command{
 					ctx.WriteString(name)
 					ctx.WriteString("\"")
 					if i < len(deployments)-1 {
+						ctx.WriteString(",")
+					}
+				}
+				ctx.Write([]byte("]"))
+				return
+			case "/nodes":
+				logger.Info().Msg("Nodes request received")
+				ctx.Response.Header.Set("Content-Type", "application/json")
+				nodes := informer.GetNodeNames()
+				logger.Info().Msgf("Nodes: %v", nodes)
+				ctx.SetStatusCode(200)
+				ctx.Write([]byte("["))
+				for i, name := range nodes {
+					ctx.WriteString("\"")
+					ctx.WriteString(name)
+					ctx.WriteString("\"")
+					if i < len(nodes)-1 {
 						ctx.WriteString(",")
 					}
 				}
