@@ -103,16 +103,25 @@ alias k=kubectl
   * [x] Implement structured logging for debugging and troubleshooting
   * [x] Add professional deployment overview with human-readable formatting
 
+- [x] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
+  * [x] Implement Kubernetes Informer pattern for real-time events
+  * [x] Add event watching and logging for deployment changes (ADD, UPDATE, DELETE)
+  * [x] Create event handlers with structured logging via zerolog
+  * [x] Integrate informer with FastHTTP server for concurrent operation
+  * [x] Support both kubeconfig and in-cluster authentication methods
+  * [x] Implement automatic cache synchronization with 30-second resync
+  * [x] Verify real-time event detection and proper informer lifecycle
+  * [x] Establish foundation for production Kubernetes controller development
+
 ### 🔄 In Progress
 
-- [ ] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
-  * [ ] Implement Kubernetes Informer pattern for real-time events
-  * [ ] Add event watching and logging for deployment changes
-  * [ ] Create event handlers for add, update, delete operations
+- [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
+  * [ ] Create HTTP endpoint to expose cached deployment data
+  * [ ] Integrate informer cache with REST API responses
+  * [ ] Add JSON serialization for deployment information
 
 ### 📋 Todo
 
-- [ ] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
 - [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
 - [ ] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
 - [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
