@@ -14,7 +14,7 @@ This tutorial guides you through building a production-grade Golang Kubernetes c
 6. **List Kubernetes Deployments with client-go** — List deployments in the default namespace.
 7. **Deployment Informer with client-go** — Watch and log Deployment events.
 8. **/deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache.
-9. **controller-runtime Deployment Controller** — Reconcile Deployments and log events.
+9. **controller-runtime Deployment Controller + Event Monitoring** — Reconcile Deployments and monitor all cluster events.
 10. **Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager.
 11. **FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps.
 12. **Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI.
@@ -123,14 +123,21 @@ alias k=kubectl
   * [x] Add structured logging for API requests with contextual information
   * [x] Demonstrate efficient API responses using in-memory informer cache
 
+- [x] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
+  * [x] Implement controller-runtime framework integration with manager
+  * [x] Create Deployment Reconciler with structured logging
+  * [x] Add concurrent controller-runtime manager alongside informers
+  * [x] Integrate controller-runtime with existing FastHTTP server architecture
+  * [x] Support both kubeconfig and in-cluster authentication for controller-runtime
+  * [x] Implement real-time reconciliation for deployment creation, updates, deletion
+  * [x] **BONUS: Event Monitoring System** — Added comprehensive Kubernetes Event tracking
+  * [x] Add Event Informer to monitor all cluster events in real-time
+  * [x] Create /events JSON API endpoint for event inspection
+  * [x] Implement structured event logging with emoji indicators (📅)
+  * [x] Add proper JSON marshalling for complex event data
+  * [x] Establish foundation for production Kubernetes operator development
+
 ### 🔄 In Progress
-
-- [ ] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
-  * [ ] Implement controller-runtime framework integration
-  * [ ] Create reconciliation loop for deployment management
-  * [ ] Add custom controller logic with event handling
-
-### 📋 Todo
 
 - [ ] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
 - [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
