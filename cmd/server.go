@@ -15,6 +15,7 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 	ctrlruntime "sigs.k8s.io/controller-runtime"
+	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
 )
@@ -32,13 +33,22 @@ var serverCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		level := parseLogLevel(logLevel)
 		configureLogger(level)
+		
+		// Configure controller-runtime logger
+		ctrlruntime.SetLogger(zap.New(zap.UseDevMode(true)))
+		
 		clientset, err := getServerKubeClient(serverKubeconfig, serverInCluster)
 		if err != nil {
 			log.Error().Err(err).Msg("Failed to create Kubernetes client")
 			os.Exit(1)
 		}
 		ctx := context.Background()
-		mgr, err := ctrlruntime.NewManager(ctrlruntime.GetConfigOrDie(), manager.Options{
+		config, err := getKubeConfig(serverKubeconfig, serverInCluster)
+		if err != nil {
+			log.Error().Err(err).Msg("Failed to get kubeconfig for controller-runtime")
+			os.Exit(1)
+		}
+		mgr, err := ctrlruntime.NewManager(config, manager.Options{
 			LeaderElection:          enableLeaderElection,
 			LeaderElectionID:        "k8s-controller-tutorial-leader-election",
 			LeaderElectionNamespace: leaderElectionNamespace,
