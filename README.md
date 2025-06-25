@@ -2,7 +2,7 @@
 
 This project is a step-by-step tutorial for DevOps and SRE engineers to learn about building Golang applications and Kubernetes controllers. Each step is implemented as a feature branch and includes a README section with explanations and command history.
 
-> **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:  
+> **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
 > **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
 
 ## 📋 Steps Overview
@@ -10,13 +10,13 @@ This project is a step-by-step tutorial for DevOps and SRE engineers to learn ab
 | Step | Branch | Status |
 |------|--------|---------|
 | **Step 1** | [feature/step1-cobra-cli](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step1-cobra-cli) | ✅ Done |
-| **Step 2** | [feature/step2-zerolog](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step2-zerolog) | ✅ Done |
-| **Step 3** | [feature/step3-pflag](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step3-pflag) | ✅ Done |
+| **Step 2** | [feature/step2-zerolog](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step2-zerolog-logging) | ✅ Done |
+| **Step 3** | [feature/step3-pflag](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step3-pflag-loglevel) | ✅ Done |
 | **Step 4** | [feature/step4-fasthttp-server](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step4-fasthttp-server) | ✅ Done |
-| **Step 5** | [feature/step5-makefile-dockerfile-workflow](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step5-makefile-dockerfile-workflow) | ✅ Done |
+| **Step 5** | [feature/step5-makefile-dockerfile-workflow](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step5-makefile-docker-ci) | ✅ Done |
 | **Step 6** | [feature/step6-list-deployments](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step6-list-deployments) | ✅ Done |
-| **Step 7** | [feature/step7-deployment-informer](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step7-deployment-informer) | ✅ Done |
-| **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-deployments-api-endpoint) | ✅ Done |
+| **Step 7** | [feature/step7-deployment-informer](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step7-informer) | ✅ Done |
+| **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-api-handler) | ✅ Done |
 | **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
 | **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
 | **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | 🔄 In Progress |
