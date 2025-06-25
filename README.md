@@ -137,9 +137,13 @@ alias k=kubectl
   * [x] Add proper JSON marshalling for complex event data
   * [x] Establish foundation for production Kubernetes operator development
 
+- [x] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
+  * [x] Implement Leader Election for High Availability controller deployment
+  * [x] Add Prometheus metrics endpoint with controller-runtime integration
+  * [x] Configure proper logging for controller-runtime with zap logger
+
 ### 🔄 In Progress
 
-- [ ] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
 - [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
 - [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
 - [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
