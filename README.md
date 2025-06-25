@@ -1,6 +1,6 @@
 # Golang Kubernetes Controller Tutorial
 
-This project is a step-by-step tutorial for DevOps and SRE engineers to learn about building Golang applications and Kubernetes controllers. Each step is implemented as a feature branch and includes a README section with explanations and command history.
+The goal of this repository is to demonstrate how to build a Kubernetes controller step by step. Starting from a basic CLI application, the tutorial progressively adds features like informers, reconcilers, metrics, and leader election to create a fully functional, production-ready Kubernetes operator using Go and controller-runtime.
 
 > **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
 > **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
