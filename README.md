@@ -4,6 +4,8 @@
 
 This step demonstrates building Custom Resource Definitions (CRDs) and controllers. Here's how they interact:
 
+> **🌍 Interactive Diagram:** For a more detailed visual guide, see [crd-architecture-diagram.html](./crd-architecture-diagram.html)
+
 ```mermaid
 graph TD
     %% Actors

@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRD Interaction Flow</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .diagram {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-rows: auto auto auto auto;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .step {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-left: 5px solid;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .crd { border-left-color: #e74c3c; }
+        .cr { border-left-color: #f39c12; }
+        .controller { border-left-color: #27ae60; }
+        .k8s { border-left-color: #9b59b6; }
+
+        .step h3 {
+            margin-top: 10px;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+
+        .step-icon {
+            font-size: 2em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .code {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+
+        .arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: #3498db;
+            font-weight: bold;
+        }
+
+        .flow-section {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .flow-title {
+            background: linear-gradient(45deg, #3498db, #2ecc71);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            display: inline-block;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .result-box {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+        }
+
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🏗️ Custom Resources: Complete Interaction Flow</h1>
+
+        <div class="diagram">
+            <!-- Phase 1: Setup -->
+            <div class="flow-section">
+                <div class="flow-title">📋 Phase 1: CRD Setup</div>
+            </div>
+
+            <div class="step crd">
+                <div class="step-number">1</div>
+                <div class="step-icon">📄</div>
+                <h3>Create CRD</h3>
+                <p><strong>DevOps Engineer</strong> creates schema for new resource</p>
+                <div class="code">kubectl apply -f crd.yaml
+
+# Registers new type:
+# frontendpage.alios.io/v1alpha1</div>
+            </div>
+
+            <div class="arrow">➡️</div>
+
+            <div class="step k8s">
+                <div class="step-number">2</div>
+                <div class="step-icon">⚙️</div>
+                <h3>Kubernetes API Server</h3>
+                <p>Registers new API endpoint</p>
+                <div class="code"># Now available:
+/apis/frontendpage.alios.io/v1alpha1/
+namespaces/{ns}/frontendpages
+
+kubectl api-resources | grep alios</div>
+            </div>
+
+            <!-- Phase 2: Controller -->
+            <div class="flow-section">
+                <div class="flow-title">🤖 Phase 2: Controller Startup</div>
+            </div>
+
+            <div class="step controller">
+                <div class="step-number">3</div>
+                <div class="step-icon">🤖</div>
+                <h3>Controller Startup</h3>
+                <p>Controller registers to watch FrontendPage events</p>
+                <div class="code">go run main.go server
+
+# Controller subscribes to events:
+# - CREATE FrontendPage
+# - UPDATE FrontendPage
+# - DELETE FrontendPage</div>
+            </div>
+
+            <div class="arrow">⬇️</div>
+
+            <div class="step k8s">
+                <div class="step-number">4</div>
+                <div class="step-icon">👁️</div>
+                <h3>Watch & Informer</h3>
+                <p>Kubernetes notifies controller about changes</p>
+                <div class="code"># Controller receives events:
+Watch: frontendpages
+Namespace: default
+Events: [ADDED, MODIFIED, DELETED]</div>
+            </div>
+
+            <!-- Phase 3: User Action -->
+            <div class="flow-section">
+                <div class="flow-title">👤 Phase 3: User Creates Resource</div>
+            </div>
+
+            <div class="step cr">
+                <div class="step-number">5</div>
+                <div class="step-icon">📝</div>
+                <h3>Custom Resource</h3>
+                <p><strong>User</strong> creates FrontendPage</p>
+                <div class="code">kubectl apply -f - <<EOF
+apiVersion: frontendpage.alios.io/v1alpha1
+kind: FrontendPage
+metadata:
+  name: my-site
+spec:
+  image: nginx:latest
+  contents: "Hello World!"
+  replicas: 2
+EOF</div>
+            </div>
+
+            <div class="arrow">➡️</div>
+
+            <div class="step k8s">
+                <div class="step-number">6</div>
+                <div class="step-icon">💾</div>
+                <h3>etcd Storage</h3>
+                <p>Kubernetes stores resource in etcd</p>
+                <div class="code"># Stored in:
+/registry/apiextensions.k8s.io/
+  customresourcedefinitions/
+  frontendpages.frontendpage.alios.io
+
+# And instance:
+/registry/frontendpage.alios.io/
+  frontendpages/default/my-site</div>
+            </div>
+
+            <!-- Phase 4: Reconciliation -->
+            <div class="flow-section">
+                <div class="flow-title">🔄 Phase 4: Reconciliation Loop</div>
+            </div>
+
+            <div class="step controller">
+                <div class="step-number">7</div>
+                <div class="step-icon">⚡</div>
+                <h3>Reconcile Trigger</h3>
+                <p>Controller receives ADDED event</p>
+                <div class="code">// Reconcile is called:
+func (r *FrontendPageReconciler)
+  Reconcile(ctx, req) {
+
+  // req.Name = "my-site"
+  // req.Namespace = "default"
+}</div>
+            </div>
+
+            <div class="arrow">⬇️</div>
+
+            <div class="step controller">
+                <div class="step-number">8</div>
+                <div class="step-icon">🏗️</div>
+                <h3>Resource Creation</h3>
+                <p>Controller creates actual resources</p>
+                <div class="code">// 1. Creates ConfigMap:
+configmap "my-site" with HTML
+
+// 2. Creates Deployment:
+deployment "my-site" with nginx
+
+// 3. Sets OwnerRef:
+FrontendPage -> ConfigMap
+FrontendPage -> Deployment</div>
+            </div>
+
+            <div class="arrow">➡️</div>
+
+            <div class="step k8s">
+                <div class="step-number">9</div>
+                <div class="step-icon">🚀</div>
+                <h3>Kubernetes Resources</h3>
+                <p>Standard controllers create pods</p>
+                <div class="code"># Deployment Controller creates:
+ReplicaSet "my-site-xxx"
+
+# ReplicaSet Controller creates:
+Pod "my-site-xxx-yyy"
+Pod "my-site-xxx-zzz"
+
+# Scheduler places pods on nodes</div>
+            </div>
+        </div>
+
+        <div class="result-box">
+            <h3>🎯 Final Result:</h3>
+            <p>One simple Custom Resource becomes a full application!</p>
+            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; margin-top: 15px;">
+                <div><strong>User created:</strong><br>1 FrontendPage file</div>
+                <div><strong>Controller created:</strong><br>ConfigMap + Deployment</div>
+                <div><strong>Kubernetes created:</strong><br>ReplicaSet + 2 Pods</div>
+            </div>
+        </div>
+
+        <div class="highlight">
+            <h3>🔄 Continuous Reconciliation:</h3>
+            <p>• If user changes <code>replicas: 3</code> - controller updates Deployment<br>
+            • If pod crashes - Deployment Controller creates new one<br>
+            • If user deletes FrontendPage - all related resources are automatically deleted (OwnerReferences)</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px; color: #7f8c8d;">
+            <p><strong>🎓 This is how simple YAML transforms into running applications through CRD and Controller magic!</strong></p>
+        </div>
+    </div>
+</body>
+</html>
