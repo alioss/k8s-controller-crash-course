@@ -1,8 +1,8 @@
-apiVersion: frontendpage.alex0m.io/v1alpha1
+apiVersion: frontendpage.alios.io/v1alpha1
 kind: FrontendPage
 metadata:
   name: testpage
-  namespace: default
+  namespace: demo-crds
 spec:
   image: nginx:latest
   contents: this is a test
