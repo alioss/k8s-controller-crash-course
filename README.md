@@ -19,13 +19,13 @@ The goal of this repository is to demonstrate how to build a Kubernetes controll
 | **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-api-handler) | ✅ Done |
 | **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
 | **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
-| **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | 🔄 In Progress |
+| **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | ✅ Done |
 | **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step12-platform-api) | ⭕ Todo |
 | **Step 13** | [feature/step13-mcp-integration](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step13-mcp-integration) | ⭕ Todo |
 | **Step 14** | [feature/step14-jwt-auth](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step14-jwt-auth) | ⭕ Todo |
 | **Step 15** | [feature/step15-opentelemetry](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step15-opentelemetry) | ⭕ Todo |
 
-**Progress: 10/15 (67%) Complete** 🚀
+**Progress: 11/15 (73%) Complete** 🚀
 
 ## Progress Status
 
@@ -121,9 +121,19 @@ The goal of this repository is to demonstrate how to build a Kubernetes controll
   * [x] Add Prometheus metrics endpoint with controller-runtime integration
   * [x] Configure proper logging for controller-runtime with zap logger
 
+- [x] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
+  * [x] Implement Custom Resource Definition (CRD) for FrontendPage with frontendpage.alios.io domain
+  * [x] Create Go types and deepcopy generation for custom resources
+  * [x] Build advanced FrontendPage Controller with sophisticated reconciliation logic
+  * [x] Add ConfigMap management for HTML content storage
+  * [x] Implement Deployment creation and updates with nginx containers
+  * [x] Configure OwnerReferences for automatic cascade deletion
+  * [x] Handle replica scaling and container image updates
+  * [x] Add comprehensive Mermaid architecture diagram showing CRD workflow
+  * [x] Establish foundation for production Kubernetes operators with custom resources
+
 ### 🔄 In Progress
 
-- [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
 - [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
 - [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
 - [ ] **Step 14: JWT Authentication** — Secure API endpoints with JWT
