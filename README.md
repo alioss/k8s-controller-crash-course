@@ -1,130 +1,97 @@
-# Golang Kubernetes Controller Tutorial
+# FrontendPage CRD and Advanced Controller Implementation
 
-The goal of this repository is to demonstrate how to build a Kubernetes controller step by step. Starting from a basic CLI application, the tutorial progressively adds features like informers, reconcilers, metrics, and leader election to create a fully functional, production-ready Kubernetes operator using Go and controller-runtime.
+- Added the Go type for the FrontendPage custom resource in `pkg/apis/frontend/v1alpha1/frontendpage_types.go`.
+- Created `groupversion_info.go` to define the group, version, and scheme for the CRD.
+- Used [controller-gen](https://github.com/kubernetes-sigs/controller-tools) to generate CRD manifests and deepcopy code.
+- Implemented a controller for the FrontendPage CRD using controller-runtime in `pkg/ctrl/frontendpage_controller.go`.
+- The controller watches FrontendPage resources and manages both a Deployment and a ConfigMap:
+  - Creates/updates a ConfigMap containing the `spec.contents` from the FrontendPage CR.
+  - Creates/updates a Deployment that mounts the ConfigMap as a volume and uses the image/replicas from the CR spec.
+  - Cleans up both the Deployment and ConfigMap when the FrontendPage is deleted.
+- Registered and started the controller with the manager in `cmd/server.go`:
 
-> **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
-> **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
+```go
+if err := ctrl.SetupFrontendPageController(mgr); err != nil {
+    log.Error().Err(err).Msg("Failed to add FrontendPage controller")
+    os.Exit(1)
+}
+```
 
-## 📋 Steps Overview
+**What it does:**
+- Defines the FrontendPage CRD structure and registers it with the Kubernetes API machinery.
+- Generates the CRD YAML and deepcopy methods required for Kubernetes controllers.
+- Reconciles FrontendPage resources to ensure a matching Deployment and ConfigMap exist in the cluster.
+- Updates the Deployment and ConfigMap if the FrontendPage spec changes.
+- Handles creation, update, and cleanup logic for Deployments and ConfigMaps owned by FrontendPage resources.
 
-| Step | Branch | Status |
-|------|--------|---------|
-| **Step 1** | [feature/step1-cobra-cli](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step1-cobra-cli) | ✅ Done |
-| **Step 2** | [feature/step2-zerolog](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step2-zerolog-logging) | ✅ Done |
-| **Step 3** | [feature/step3-pflag](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step3-pflag-loglevel) | ✅ Done |
-| **Step 4** | [feature/step4-fasthttp-server](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step4-fasthttp-server) | ✅ Done |
-| **Step 5** | [feature/step5-makefile-dockerfile-workflow](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step5-makefile-docker-ci) | ✅ Done |
-| **Step 6** | [feature/step6-list-deployments](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step6-list-deployments) | ✅ Done |
-| **Step 7** | [feature/step7-deployment-informer](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step7-informer) | ✅ Done |
-| **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-api-handler) | ✅ Done |
-| **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
-| **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
-| **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | 🔄 In Progress |
-| **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step12-platform-api) | ⭕ Todo |
-| **Step 13** | [feature/step13-mcp-integration](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step13-mcp-integration) | ⭕ Todo |
-| **Step 14** | [feature/step14-jwt-auth](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step14-jwt-auth) | ⭕ Todo |
-| **Step 15** | [feature/step15-opentelemetry](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step15-opentelemetry) | ⭕ Todo |
+**Usage:**
+```sh
+git switch feature/step11-frontendpage-crd 
+# Add Go types and group version info for FrontendPage (done already)
+# (edit pkg/apis/frontend/v1alpha1/frontendpage_types.go and groupversion_info.go) (done already)
 
-**Progress: 10/15 (67%) Complete** 🚀
+# Run controller-gen to generate CRD and deepcopy code
+controller-gen crd:crdVersions=v1 paths=./pkg/apis/... output:crd:dir=./config/crd object paths=./pkg/apis/...
 
-## Progress Status
+# Scaffold and implement the advanced FrontendPage controller
+# created pkg/ctrl/frontendpage_controller.go and implemented controller logic for Deployment and ConfigMap management
+# registered the controller in cmd/server.go
 
-### ✅ Completed Steps
+# Run the server to start the controller
+go run main.go --log-level trace --kubeconfig  ~/.kube/config server
+```
 
-- [x] **Step 1: Golang CLI Application using Cobra** — Initialize a CLI app with cobra-cli
-  * [x] Set up basic Cobra CLI structure
-  * [x] Create go-basic command with Kubernetes struct
-  * [x] Add version flag (--version, -v)
-  * [x] Create status command with cluster information
-  * [x] Add unit tests for struct methods
-  * [x] Update project documentation
+## Running Tests
 
-- [x] **Step 2: Zerolog for Log Levels** — Add structured logging with zerolog
-  * [x] Replace fmt.Println with structured logging in go-basic command
-  * [x] Configure different log levels (trace, debug, info, warn, error)
-  * [x] Add JSON log formatting for all commands
-  * [x] Implement structured fields (cluster_name, version, username, etc.)
-  * [x] Demonstrate zerolog fluent API with method chaining
+This project uses [envtest](https://book.kubebuilder.io/reference/envtest.html) and controller-runtime for integration and controller tests.
 
-- [x] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
-  * [x] Add --log-level flag to control zerolog output level
-  * [x] Implement flag validation for valid log levels (trace, debug, info, warn, error)
-  * [x] Configure dynamic log level switching with zerolog.SetGlobalLevel()
-  * [x] Add different output formats based on log level (console vs JSON)
-  * [x] Use PersistentFlags for global log level control across all commands
-  * [x] Demonstrate comprehensive logging at all verbosity levels
+### Prerequisites
+- Go (see go.mod for version)
+- Make
+- The `setup-envtest` binary (automatically handled by the Makefile)
+- CRD YAMLs present in `config/crd/`
 
-- [x] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
-  * [x] Add server command using FastHTTP instead of net/http
-  * [x] Implement configurable port and host flags (--port)
-  * [x] Add structured logging for HTTP requests and responses
-  * [x] Create simple routing system with switch statement
-  * [x] Add /health endpoint returning JSON status
-  * [x] Implement 404 handling with JSON error responses
-  * [x] Set appropriate Content-Type headers for different endpoints
+### Run all tests
+```sh
+make test
+```
+This will:
+- Download and set up envtest if needed
+- Run all Go tests in the project (including controller and utility tests)
 
-- [x] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
-  * [x] Create Makefile for build automation (build, test, run, docker-build targets)
-  * [x] Add multi-stage Dockerfile for optimized containerization
-  * [x] Setup GitHub Actions workflow for comprehensive CI/CD pipeline
-  * [x] Implement Docker security scanning with Trivy
-  * [x] Add Helm chart packaging and artifact upload
-  * [x] Configure cross-platform build support
-  * [x] Add automated testing and code quality checks
+### Run only controller tests
+```sh
+make test-controller
+```
+This will:
+- Run only the tests in `pkg/ctrl/` (controller logic)
 
-- [x] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
-  * [x] Add client-go dependency for Kubernetes API access
-  * [x] Implement deployment listing functionality with detailed information
-  * [x] Add kubeconfig handling and cluster connectivity
-  * [x] Create colorful status indicators with emoji (✅ ⚠️ ❌ ⏸️)
-  * [x] Display replica status, container images, and deployment age
-  * [x] Add comprehensive summary statistics (ready deployments, running pods)
-  * [x] Implement structured logging for debugging and troubleshooting
-  * [x] Add professional deployment overview with human-readable formatting
+### Test output
+- Test logs will show simulated etcd state and resource changes for CRDs and controllers.
+- JUnit XML and coverage reports are generated as `report.xml` and `coverage.xml`.
 
-- [x] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
-  * [x] Implement Kubernetes Informer pattern for real-time events
-  * [x] Add event watching and logging for deployment changes (ADD, UPDATE, DELETE)
-  * [x] Create event handlers with structured logging via zerolog
-  * [x] Integrate informer with FastHTTP server for concurrent operation
-  * [x] Support both kubeconfig and in-cluster authentication methods
-  * [x] Implement automatic cache synchronization with 30-second resync
-  * [x] Verify real-time event detection and proper informer lifecycle
-  * [x] Establish foundation for production Kubernetes controller development
+### Troubleshooting
+- If you see errors about missing CRDs, ensure you have generated CRDs in `config/crd/` (see Usage above for controller-gen command).
+- If you see errors about envtest, try running `make envtest` to ensure the binary is present in `bin/`.
+- If you add new CRDs or controllers, re-run `controller-gen` and re-run tests.
 
-- [x] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
-  * [x] Create HTTP endpoint to expose cached deployment data
-  * [x] Integrate informer cache with REST API responses
-  * [x] Add JSON serialization for deployment information
-  * [x] Implement request ID tracking with UUID for better debugging
-  * [x] Add /nodes endpoint for cluster-wide node information
-  * [x] Create dual informer setup (deployments + nodes) running concurrently
-  * [x] Add structured logging for API requests with contextual information
-  * [x] Demonstrate efficient API responses using in-memory informer cache
+---
+## Project Structure
 
-- [x] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
-  * [x] Implement controller-runtime framework integration with manager
-  * [x] Create Deployment Reconciler with structured logging
-  * [x] Add concurrent controller-runtime manager alongside informers
-  * [x] Integrate controller-runtime with existing FastHTTP server architecture
-  * [x] Support both kubeconfig and in-cluster authentication for controller-runtime
-  * [x] Implement real-time reconciliation for deployment creation, updates, deletion
-  * [x] **BONUS: Event Monitoring System** — Added comprehensive Kubernetes Event tracking
-  * [x] Add Event Informer to monitor all cluster events in real-time
-  * [x] Create /events JSON API endpoint for event inspection
-  * [x] Implement structured event logging with emoji indicators (📅)
-  * [x] Add proper JSON marshalling for complex event data
-  * [x] Establish foundation for production Kubernetes operator development
+- `cmd/` — Contains your CLI commands.
+- `main.go` — Entry point for your application.
+- `server.go` - fasthttp server
+- `Makefile` — Build automation tasks.
+- `Dockerfile` — Distroless Dockerfile for secure containerization.
+- `.github/workflows/` — GitHub Actions workflows for CI/CD.
+- `list.go` - list cli command
+- `charts/app` - helm chart
+- `pkg/informer` - informer implementation
+- `pkg/testutil` - envtest kit
+- `pkg/ctrl` - controller implementation
+- `config/crd` - CRD definition
+- `pkg/apis` - CRD types and deepcopy
 
-- [x] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
-  * [x] Implement Leader Election for High Availability controller deployment
-  * [x] Add Prometheus metrics endpoint with controller-runtime integration
-  * [x] Configure proper logging for controller-runtime with zap logger
+## License
 
-### 🔄 In Progress
-
-- [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
-- [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
-- [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
-- [ ] **Step 14: JWT Authentication** — Secure API endpoints with JWT
-- [ ] **Step 15: OpenTelemetry Instrumentation** — Add distributed tracing with OpenTelemetry
+MIT License. See [LICENSE](LICENSE) for details.
