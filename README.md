@@ -1,130 +1,185 @@
-# Golang Kubernetes Controller Tutorial
+# Platform API (CRUD + Swagger)
 
-The goal of this repository is to demonstrate how to build a Kubernetes controller step by step. Starting from a basic CLI application, the tutorial progressively adds features like informers, reconcilers, metrics, and leader election to create a fully functional, production-ready Kubernetes operator using Go and controller-runtime.
+- Added RESTful CRUD API endpoints for the FrontendPage CRD using FastHTTP and fasthttprouter.
+- API handlers use the controller-runtime client to create, update, delete, and list FrontendPage resources in Kubernetes, triggering reconciliation.
+- Integrated [Swagger](https://swagger.io/) documentation and served Swagger UI for easy API exploration.
+- All API endpoints are under `/api/frontendpages`.
 
-> **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
-> **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
+**Usage:**
+```sh
+git switch feature/step12-platform-api 
+go run main.go --log-level trace --kubeconfig  ~/.kube/config server --enable-leader-election=0
+```
+| Method | Endpoint                              | Example Command / Payload                                                                                                                                                                                                                                                                                                                                 | Description                |
+|--------|---------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|
+| POST   | /api/frontendpages                    | <pre>curl -X POST http://localhost:8080/api/frontendpages \<br>  -H 'Content-Type: application/json' \<br>  -d '{<br>  "metadata": {<br>    "name": "my-page"<br>  },<br>  "spec": {<br>    "contents": "&lt;h1&gt;Hello&lt;/h1&gt;",<br>    "image": "nginx:latest",<br>    "replicas": 2<br>  }<br>}'</pre>                | Create a new FrontendPage  |
+| GET    | /api/frontendpages                    | <pre>curl http://localhost:8080/api/frontendpages</pre>                                                                                                                                                                                                                                                                                                   | List all FrontendPages     |
+| GET    | /api/frontendpages/my-page            | <pre>curl http://localhost:8080/api/frontendpages/my-page</pre>                                                                                                                                                                                                                                                                                           | Get a FrontendPage by name |
+| PUT    | /api/frontendpages/my-page            | <pre>curl -X PUT http://localhost:8080/api/frontendpages/my-page \<br>  -H 'Content-Type: application/json' \<br>  -d '{<br>  "spec": {<br>    "contents": "&lt;h1&gt;Updated&lt;/h1&gt;",<br>    "image": "nginx:alpine",<br>    "replicas": 1<br>  }<br>}'</pre>                                                    | Update a FrontendPage      |
+| DELETE | /api/frontendpages/my-page            | <pre>curl -X DELETE http://localhost:8080/api/frontendpages/my-page</pre>                                                                                                                                                                                                                                                                                | Delete a FrontendPage      |
 
-## 📋 Steps Overview
+- Visit `http://localhost:8080/swagger/index.html` for interactive API docs.
 
-| Step | Branch | Status |
-|------|--------|---------|
-| **Step 1** | [feature/step1-cobra-cli](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step1-cobra-cli) | ✅ Done |
-| **Step 2** | [feature/step2-zerolog](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step2-zerolog-logging) | ✅ Done |
-| **Step 3** | [feature/step3-pflag](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step3-pflag-loglevel) | ✅ Done |
-| **Step 4** | [feature/step4-fasthttp-server](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step4-fasthttp-server) | ✅ Done |
-| **Step 5** | [feature/step5-makefile-dockerfile-workflow](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step5-makefile-docker-ci) | ✅ Done |
-| **Step 6** | [feature/step6-list-deployments](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step6-list-deployments) | ✅ Done |
-| **Step 7** | [feature/step7-deployment-informer](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step7-informer) | ✅ Done |
-| **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-api-handler) | ✅ Done |
-| **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
-| **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
-| **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | 🔄 In Progress |
-| **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step12-platform-api) | ⭕ Todo |
-| **Step 13** | [feature/step13-mcp-integration](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step13-mcp-integration) | ⭕ Todo |
-| **Step 14** | [feature/step14-jwt-auth](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step14-jwt-auth) | ⭕ Todo |
-| **Step 15** | [feature/step15-opentelemetry](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step15-opentelemetry) | ⭕ Todo |
+**What it does:**
+- Exposes CRUD API for FrontendPage resources, backed by Kubernetes CRDs and controller logic.
+- Provides OpenAPI/Swagger docs and UI for easy testing and documentation.
 
-**Progress: 10/15 (67%) Complete** 🚀
+## Running Tests
 
-## Progress Status
+This project uses [envtest](https://book.kubebuilder.io/reference/envtest.html) and controller-runtime for integration and controller tests.
 
-### ✅ Completed Steps
+### Prerequisites
+- Go (see go.mod for version)
+- Make
+- The `setup-envtest` binary (automatically handled by the Makefile)
+- CRD YAMLs present in `config/crd/`
 
-- [x] **Step 1: Golang CLI Application using Cobra** — Initialize a CLI app with cobra-cli
-  * [x] Set up basic Cobra CLI structure
-  * [x] Create go-basic command with Kubernetes struct
-  * [x] Add version flag (--version, -v)
-  * [x] Create status command with cluster information
-  * [x] Add unit tests for struct methods
-  * [x] Update project documentation
+### Run all tests
+```sh
+make test
+```
+This will:
+- Download and set up envtest if needed
+- Run all Go tests in the project (including controller and utility tests)
 
-- [x] **Step 2: Zerolog for Log Levels** — Add structured logging with zerolog
-  * [x] Replace fmt.Println with structured logging in go-basic command
-  * [x] Configure different log levels (trace, debug, info, warn, error)
-  * [x] Add JSON log formatting for all commands
-  * [x] Implement structured fields (cluster_name, version, username, etc.)
-  * [x] Demonstrate zerolog fluent API with method chaining
+### Run only controller tests
+```sh
+make test-controller
+```
+This will:
+- Run only the tests in `pkg/ctrl/` (controller logic)
 
-- [x] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
-  * [x] Add --log-level flag to control zerolog output level
-  * [x] Implement flag validation for valid log levels (trace, debug, info, warn, error)
-  * [x] Configure dynamic log level switching with zerolog.SetGlobalLevel()
-  * [x] Add different output formats based on log level (console vs JSON)
-  * [x] Use PersistentFlags for global log level control across all commands
-  * [x] Demonstrate comprehensive logging at all verbosity levels
+### Test output
+- Test logs will show simulated etcd state and resource changes for CRDs and controllers.
+- JUnit XML and coverage reports are generated as `report.xml` and `coverage.xml`.
 
-- [x] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
-  * [x] Add server command using FastHTTP instead of net/http
-  * [x] Implement configurable port and host flags (--port)
-  * [x] Add structured logging for HTTP requests and responses
-  * [x] Create simple routing system with switch statement
-  * [x] Add /health endpoint returning JSON status
-  * [x] Implement 404 handling with JSON error responses
-  * [x] Set appropriate Content-Type headers for different endpoints
+### Troubleshooting
+- If you see errors about missing CRDs, ensure you have generated CRDs in `config/crd/` (see Usage above for controller-gen command).
+- If you see errors about envtest, try running `make envtest` to ensure the binary is present in `bin/`.
+- If you add new CRDs or controllers, re-run `controller-gen` and re-run tests.
 
-- [x] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
-  * [x] Create Makefile for build automation (build, test, run, docker-build targets)
-  * [x] Add multi-stage Dockerfile for optimized containerization
-  * [x] Setup GitHub Actions workflow for comprehensive CI/CD pipeline
-  * [x] Implement Docker security scanning with Trivy
-  * [x] Add Helm chart packaging and artifact upload
-  * [x] Configure cross-platform build support
-  * [x] Add automated testing and code quality checks
+---
 
-- [x] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
-  * [x] Add client-go dependency for Kubernetes API access
-  * [x] Implement deployment listing functionality with detailed information
-  * [x] Add kubeconfig handling and cluster connectivity
-  * [x] Create colorful status indicators with emoji (✅ ⚠️ ❌ ⏸️)
-  * [x] Display replica status, container images, and deployment age
-  * [x] Add comprehensive summary statistics (ready deployments, running pods)
-  * [x] Implement structured logging for debugging and troubleshooting
-  * [x] Add professional deployment overview with human-readable formatting
+## Project Structure
 
-- [x] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
-  * [x] Implement Kubernetes Informer pattern for real-time events
-  * [x] Add event watching and logging for deployment changes (ADD, UPDATE, DELETE)
-  * [x] Create event handlers with structured logging via zerolog
-  * [x] Integrate informer with FastHTTP server for concurrent operation
-  * [x] Support both kubeconfig and in-cluster authentication methods
-  * [x] Implement automatic cache synchronization with 30-second resync
-  * [x] Verify real-time event detection and proper informer lifecycle
-  * [x] Establish foundation for production Kubernetes controller development
+- `cmd/` — Contains your CLI commands.
+- `main.go` — Entry point for your application.
+- `server.go` - fasthttp server
+- `Makefile` — Build automation tasks.
+- `Dockerfile` — Distroless Dockerfile for secure containerization.
+- `.github/workflows/` — GitHub Actions workflows for CI/CD.
+- `list.go` - list cli command
+- `charts/app` - helm chart
+- `pkg/informer` - informer implementation
+- `pkg/testutil` - envtest kit
+- `pkg/ctrl` - controller implementation
+- `config/crd` - CRD definition
+- `pkg/apis` - CRD types and deepcopy
+- `pkg/api` - API for PE integration
 
-- [x] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
-  * [x] Create HTTP endpoint to expose cached deployment data
-  * [x] Integrate informer cache with REST API responses
-  * [x] Add JSON serialization for deployment information
-  * [x] Implement request ID tracking with UUID for better debugging
-  * [x] Add /nodes endpoint for cluster-wide node information
-  * [x] Create dual informer setup (deployments + nodes) running concurrently
-  * [x] Add structured logging for API requests with contextual information
-  * [x] Demonstrate efficient API responses using in-memory informer cache
+# FrontendPage API - Test Instructions
 
-- [x] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
-  * [x] Implement controller-runtime framework integration with manager
-  * [x] Create Deployment Reconciler with structured logging
-  * [x] Add concurrent controller-runtime manager alongside informers
-  * [x] Integrate controller-runtime with existing FastHTTP server architecture
-  * [x] Support both kubeconfig and in-cluster authentication for controller-runtime
-  * [x] Implement real-time reconciliation for deployment creation, updates, deletion
-  * [x] **BONUS: Event Monitoring System** — Added comprehensive Kubernetes Event tracking
-  * [x] Add Event Informer to monitor all cluster events in real-time
-  * [x] Create /events JSON API endpoint for event inspection
-  * [x] Implement structured event logging with emoji indicators (📅)
-  * [x] Add proper JSON marshalling for complex event data
-  * [x] Establish foundation for production Kubernetes operator development
+## Prerequisites
+- Go 1.20+
+- [kubebuilder test assets](https://book.kubebuilder.io/reference/envtest.html#installing-envtest-binaries) (envtest)
+- The following Go dependencies:
+  - github.com/valyala/fasthttprouter
+  - github.com/google/uuid
+  - github.com/stretchr/testify
 
-- [x] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
-  * [x] Implement Leader Election for High Availability controller deployment
-  * [x] Add Prometheus metrics endpoint with controller-runtime integration
-  * [x] Configure proper logging for controller-runtime with zap logger
+Install them with:
+```sh
+go get github.com/valyala/fasthttprouter github.com/google/uuid github.com/stretchr/testify
+```
 
-### 🔄 In Progress
+## Running the API E2E/Integration Tests
 
-- [ ] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
-- [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
-- [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
-- [ ] **Step 14: JWT Authentication** — Secure API endpoints with JWT
-- [ ] **Step 15: OpenTelemetry Instrumentation** — Add distributed tracing with OpenTelemetry
+1. **Install envtest assets** (if not already):
+   ```sh
+   kubebuilder envtest install
+   # or manually download and set KUBEBUILDER_ASSETS
+   ```
+
+2. **Run the tests:**
+   ```sh
+   go test -v -tags=testtools ./pkg/api  -tags=testtools
+   ```
+   - The tests will spin up a real Kubernetes API server (envtest), start the controller manager, and exercise the full API (create, update, delete FrontendPage resources).
+   - Each test uses a unique resource name to avoid collisions.
+
+## GitHub Actions: How to Test Frontend API
+
+To test the frontend API in a GitHub Actions workflow:
+
+1. **Set up Go and envtest in your workflow:**
+   ```yaml
+   - uses: actions/checkout@v3
+   - uses: actions/setup-go@v4
+     with:
+       go-version: '1.20'
+   - name: Install envtest tools
+     run: |
+       go install sigs.k8s.io/controller-runtime/tools/setup-envtest@latest
+       setup-envtest use 1.29.0 # or your preferred version
+   ```
+
+2. **Run the tests:**
+   ```yaml
+   - name: Run FrontendPage API tests
+     run: go test -v -tags=testtools ./pkg/api
+   ```
+
+## Example API Test Payload (for local or CI testing)
+
+To test the API endpoints (e.g., with curl, Postman, or a custom script), use the following JSON payloads:
+
+### Create FrontendPage
+```json
+{
+  "metadata": {
+    "name": "test-frontend-page-1234",
+    "namespace": "default"
+  },
+  "spec": {
+    "contents": "<h1>Hello</h1>",
+    "image": "nginx:latest",
+    "replicas": 2
+  }
+}
+```
+
+### Update FrontendPage
+- Fetch the existing resource to get its `resourceVersion`.
+- Use the same structure as above, but include the `resourceVersion` in `metadata` and update the fields you want.
+
+### Delete FrontendPage
+- Send a DELETE request to `/api/frontendpages/{name}`.
+
+## Notes
+- The tests do not require a running Kubernetes cluster; everything runs in-process using envtest.
+- Pods will not become Ready in envtest; tests only check for resource existence and spec.
+- For troubleshooting, check the test logs for API call details and controller reconciliation logs.
+
+
+## Ngrok
+```sh
+curl -sSL https://ngrok-agent.s3.amazonaws.com/ngrok.asc \
+  | sudo tee /etc/apt/trusted.gpg.d/ngrok.asc >/dev/null \
+  && echo "deb https://ngrok-agent.s3.amazonaws.com buster main" \
+  | sudo tee /etc/apt/sources.list.d/ngrok.list \
+  && sudo apt update \
+  && sudo apt install ngrok
+  ```
+### Configure API key
+```sh
+ngrok config add-authtoken xxxxxxxxxxxxxxxxxxxxxxxxxx
+```
+
+### Run proxy
+```sh
+ngrok http --url=quietly-just-ferret.ngrok-free.app 8080
+```
+
+## License
+
+MIT License. See [LICENSE](LICENSE) for details.
