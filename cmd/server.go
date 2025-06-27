@@ -12,6 +12,7 @@ import (
 	"github.com/yourusername/k8s-controller-tutorial/pkg/api"
 	"github.com/yourusername/k8s-controller-tutorial/pkg/ctrl"
 	"github.com/yourusername/k8s-controller-tutorial/pkg/informer"
+	"github.com/yourusername/k8s-controller-tutorial/pkg/port"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/client-go/kubernetes"
 
@@ -24,6 +25,8 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 	"sigs.k8s.io/controller-runtime/pkg/manager"
 	"sigs.k8s.io/controller-runtime/pkg/metrics/server"
+
+	_ "github.com/yourusername/k8s-controller-tutorial/docs" // for swagger
 )
 
 var serverPort int
@@ -32,6 +35,9 @@ var serverInCluster bool
 var enableLeaderElection bool
 var leaderElectionNamespace string
 var metricsPort int
+var portBaseURL string
+var portClientID string
+var portClientSecret string
 
 var serverCmd = &cobra.Command{
 	Use:   "server",
@@ -64,7 +70,22 @@ var serverCmd = &cobra.Command{
 			os.Exit(1)
 		}
 
-		if err := ctrl.AddFrontendController(mgr); err != nil {
+		// Setup Port.io client if configured
+		var portClient *port.PortClient
+		if portBaseURL != "" && portClientID != "" && portClientSecret != "" {
+			log.Info().Msg("Setting up Port.io integration...")
+			portClient = port.NewPortClient(portBaseURL, portClientID, portClientSecret)
+			if err := portClient.Authenticate(); err != nil {
+				log.Warn().Err(err).Msg("Failed to authenticate with Port.io, continuing without integration")
+				portClient = nil
+			} else {
+				log.Info().Msg("Successfully connected to Port.io")
+			}
+		} else {
+			log.Info().Msg("Port.io integration not configured (use --port-* flags to enable)")
+		}
+
+		if err := ctrl.AddFrontendControllerWithPort(mgr, portClient); err != nil {
 			log.Error().Err(err).Msg("Failed to add frontend controller")
 			os.Exit(1)
 		}
@@ -80,6 +101,40 @@ var serverCmd = &cobra.Command{
 		router.GET("/api/frontendpages/:name", frontendAPI.GetFrontendPage)
 		router.PUT("/api/frontendpages/:name", frontendAPI.UpdateFrontendPage)
 		router.DELETE("/api/frontendpages/:name", frontendAPI.DeleteFrontendPage)
+
+		// Swagger JSON endpoint
+		router.GET("/swagger/doc.json", func(ctx *fasthttp.RequestCtx) {
+			ctx.SetContentType("application/json")
+			swaggerJSON := `{"swagger":"2.0","info":{"title":"FrontendPage API","version":"1.0"},"paths":{"/api/frontendpages":{"get":{"summary":"List FrontendPages","responses":{"200":{"description":"OK"}}},"post":{"summary":"Create FrontendPage","responses":{"201":{"description":"Created"}}}},"/api/frontendpages/{name}":{"get":{"summary":"Get FrontendPage","responses":{"200":{"description":"OK"}}},"put":{"summary":"Update FrontendPage","responses":{"200":{"description":"OK"}}},"delete":{"summary":"Delete FrontendPage","responses":{"204":{"description":"No Content"}}}}}}`
+			ctx.SetBodyString(swaggerJSON)
+		})
+
+		// Simple Swagger UI (basic HTML)
+		router.GET("/swagger/index.html", func(ctx *fasthttp.RequestCtx) {
+			ctx.SetContentType("text/html")
+			swaggerHTML := `<!DOCTYPE html>
+<html>
+<head>
+    <title>FrontendPage API</title>
+    <link rel="stylesheet" type="text/css" href="https://unpkg.com/swagger-ui-dist@3.52.5/swagger-ui.css" />
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="https://unpkg.com/swagger-ui-dist@3.52.5/swagger-ui-bundle.js"></script>
+    <script>
+    SwaggerUIBundle({
+        url: '/swagger/doc.json',
+        dom_id: '#swagger-ui',
+        presets: [
+            SwaggerUIBundle.presets.apis,
+            SwaggerUIBundle.presets.standalone
+        ]
+    });
+    </script>
+</body>
+</html>`
+			ctx.SetBodyString(swaggerHTML)
+		})
 
 		// Legacy endpoint for deployments
 		router.GET("/deployments", func(ctx *fasthttp.RequestCtx) {
@@ -137,4 +192,9 @@ func init() {
 	serverCmd.Flags().BoolVar(&enableLeaderElection, "enable-leader-election", true, "Enable leader election for controller manager")
 	serverCmd.Flags().StringVar(&leaderElectionNamespace, "leader-election-namespace", "default", "Namespace for leader election")
 	serverCmd.Flags().IntVar(&metricsPort, "metrics-port", 8081, "Port for controller manager metrics")
+	
+	// Port.io integration flags
+	serverCmd.Flags().StringVar(&portBaseURL, "port-base-url", "", "Port.io API base URL (e.g., https://api.getport.io)")
+	serverCmd.Flags().StringVar(&portClientID, "port-client-id", "", "Port.io client ID")
+	serverCmd.Flags().StringVar(&portClientSecret, "port-client-secret", "", "Port.io client secret")
 }
