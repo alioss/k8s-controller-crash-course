@@ -2,6 +2,10 @@
 
 The goal of this repository is to demonstrate how to build a Kubernetes controller step by step. Starting from a basic CLI application, the tutorial progressively adds features like informers, reconcilers, metrics, and leader election to create a fully functional, production-ready Kubernetes operator using Go and controller-runtime.
 
+🎆 **Latest Achievement: Complete Platform as a Service with Port.io Integration!**
+
+> **🚀 NEW: Port.io Integration** - Our controller now includes a full Internal Developer Portal integration with Port.io, transforming it into a complete Platform as a Service with beautiful self-service UI, real-time sync, and developer workflows. See [README-port.md](./README-port.md) for complete setup guide.
+
 > **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
 > **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
 
@@ -20,12 +24,12 @@ The goal of this repository is to demonstrate how to build a Kubernetes controll
 | **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
 | **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
 | **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | ✅ Done |
-| **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step12-platform-api) | ⭕ Todo |
+| **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/blob/feature/step12-platform-api/README-port.md) | ✅ Done |
 | **Step 13** | [feature/step13-mcp-integration](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step13-mcp-integration) | ⭕ Todo |
 | **Step 14** | [feature/step14-jwt-auth](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step14-jwt-auth) | ⭕ Todo |
 | **Step 15** | [feature/step15-opentelemetry](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step15-opentelemetry) | ⭕ Todo |
 
-**Progress: 11/15 (73%) Complete** 🚀
+**Progress: 12/15 (80%) Complete** 🚀
 
 ## Progress Status
 
@@ -132,9 +136,20 @@ The goal of this repository is to demonstrate how to build a Kubernetes controll
   * [x] Add comprehensive Mermaid architecture diagram showing CRD workflow
   * [x] Establish foundation for production Kubernetes operators with custom resources
 
+- [x] **Step 12: Platform API + Port.io Integration** — Transform controller into Platform as a Service with Port.io
+  * [x] Implement RESTful CRUD API for FrontendPage resources
+  * [x] Add Swagger UI documentation with interactive API explorer
+  * [x] **Port.io Integration**: Connect controller with Internal Developer Portal
+  * [x] Create Port.io Blueprint for FrontendPage schema definition
+  * [x] Build Self-Service Actions for developer self-service workflows
+  * [x] Implement bi-directional real-time sync (Port.io ↔ Kubernetes)
+  * [x] Add automatic status updates and metrics synchronization
+  * [x] Support webhook-driven deployments from Port.io UI
+  * [x] Create comprehensive Port.io documentation with troubleshooting
+  * [x] **Result**: Complete Platform as a Service with beautiful developer portal
+
 ### 🔄 In Progress
 
-- [ ] **Step 12: Platform API (CRUD + Swagger)** — Add RESTful CRUD API and Swagger UI
 - [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
 - [ ] **Step 14: JWT Authentication** — Secure API endpoints with JWT
 - [ ] **Step 15: OpenTelemetry Instrumentation** — Add distributed tracing with OpenTelemetry
