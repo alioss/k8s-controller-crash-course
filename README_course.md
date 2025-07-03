@@ -15,7 +15,7 @@ A Kubernetes controller that automates application deployments with intelligent 
 - **Declarative Management**: Custom Resource Definitions (CRDs)
 - **Production Safety**: Manual approval required for production deployments
 
-### 🔍 [atlasctl](./atlasctl/README.md)  
+### 🔍 [atlasctl](./atlasctl/README.md)
 A command-line tool for observing and managing Atlas applications:
 - **Multi-environment View**: See all deployments across clusters
 - **Real-time Status**: Current deployment status and health
@@ -185,7 +185,7 @@ spec:
 
 ### Production Deployment
 ```yaml
-# prod-app.yaml  
+# prod-app.yaml
 apiVersion: atlas.io/v1
 kind: AtlasApp
 metadata:
@@ -313,6 +313,6 @@ This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENS
 
 ---
 
-**Ready to automate your deployments?** 🚀 
+**Ready to automate your deployments?** 🚀
 
 Get started with the [Atlas Controller](./atlas-controller/README.md) or [atlasctl](./atlasctl/README.md) today!
