@@ -1,0 +1,13 @@
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: atlas-stage
+  namespace: stage
+spec:
+  environment: stage
+  version: "1.21.0"
+  migrationId: 5
+  replicas: 3
+  autoPromote: true
+  nextEnvironment: prod
+  healthCheckPath: "/"

@@ -1,0 +1,86 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: atlas-controller-role
+rules:
+- apiGroups:
+  - atlas.io
+  resources:
+  - atlasapps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - atlas.io
+  resources:
+  - atlasapps/finalizers
+  verbs:
+  - update
+- apiGroups:
+  - atlas.io
+  resources:
+  - atlasapps/status
+  verbs:
+  - get
+  - patch
+  - update
+- apiGroups:
+  - apps
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - services
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - coordination.k8s.io
+  resources:
+  - leases
+  verbs:
+  - get
+  - list
+  - watch
+  - create
+  - update
+  - patch
+  - delete
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: atlas-controller-rolebinding
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: atlas-controller-role
+subjects:
+- kind: ServiceAccount
+  name: atlas-controller-sa
+  namespace: atlas-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: atlas-controller-sa
+  namespace: atlas-system

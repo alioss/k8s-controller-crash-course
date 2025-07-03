@@ -1,0 +1,13 @@
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: atlas-prod
+  namespace: prod
+spec:
+  environment: prod
+  version: "1.21.0"
+  migrationId: 10
+  replicas: 10
+  autoPromote: false
+  requireApproval: true
+  healthCheckPath: "/"
