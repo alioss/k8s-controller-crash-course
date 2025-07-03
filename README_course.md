@@ -1,155 +1,318 @@
-# Golang Kubernetes Controller Tutorial
+# Atlas Platform
 
-The goal of this repository is to demonstrate how to build a Kubernetes controller step by step. Starting from a basic CLI application, the tutorial progressively adds features like informers, reconcilers, metrics, and leader election to create a fully functional, production-ready Kubernetes operator using Go and controller-runtime.
+🚀 **Complete Kubernetes-native platform for automated application deployment and management**
 
-🎆 **Latest Achievement: Complete Platform as a Service with Port.io Integration!**
+Atlas Platform provides a comprehensive solution for managing application deployments across multiple environments with automated promotion workflows, health monitoring, and declarative configuration.
 
-> **🚀 NEW: Port.io Integration** - Our controller now includes a full Internal Developer Portal integration with Port.io, transforming it into a complete Platform as a Service with beautiful self-service UI, real-time sync, and developer workflows. See [README-port.md](./README-port.md) for complete setup guide.
+## 🌟 Overview
 
-> **📚 Reference Repository:** The complete reference implementation for this tutorial can be found at:
-> **https://github.com/den-vasyliev/k8s-controller-tutorial-ref**
+The Atlas Platform consists of two main components that work together to provide a complete deployment automation solution:
 
-## 📋 Steps Overview
+### 🎯 [Atlas Controller](./atlas-controller/README.md)
+A Kubernetes controller that automates application deployments with intelligent promotion workflows:
+- **Automated Promotion**: dev → stage → prod with approval gates
+- **Health Monitoring**: Continuous application health checks
+- **Declarative Management**: Custom Resource Definitions (CRDs)
+- **Production Safety**: Manual approval required for production deployments
 
-| Step | Branch | Status |
-|------|--------|---------|
-| **Step 1** | [feature/step1-cobra-cli](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step1-cobra-cli) | ✅ Done |
-| **Step 2** | [feature/step2-zerolog](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step2-zerolog-logging) | ✅ Done |
-| **Step 3** | [feature/step3-pflag](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step3-pflag-loglevel) | ✅ Done |
-| **Step 4** | [feature/step4-fasthttp-server](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step4-fasthttp-server) | ✅ Done |
-| **Step 5** | [feature/step5-makefile-dockerfile-workflow](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step5-makefile-docker-ci) | ✅ Done |
-| **Step 6** | [feature/step6-list-deployments](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step6-list-deployments) | ✅ Done |
-| **Step 7** | [feature/step7-deployment-informer](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step7-informer) | ✅ Done |
-| **Step 8** | [feature/step8-deployments-api-endpoint](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step8-api-handler) | ✅ Done |
-| **Step 9** | [feature/step9-controller-runtime](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step9-controller-runtime) | ✅ Done |
-| **Step 10** | [feature/step10-leader-election](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step10-leader-election) | ✅ Done |
-| **Step 11** | [feature/step11-frontendpage-crd](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step11-frontendpage-crd) | ✅ Done |
-| **Step 12** | [feature/step12-platform-api](https://github.com/alioss/k8s-controller-crash-course/blob/feature/step12-platform-api/README-port.md) | ✅ Done |
-| **Step 13** | [feature/step13-mcp-integration](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step13-mcp-integration) | ⭕ Todo |
-| **Step 14** | [feature/step14-jwt-auth](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step14-jwt-auth) | ⭕ Todo |
-| **Step 15** | [feature/step15-opentelemetry](https://github.com/alioss/k8s-controller-crash-course/tree/feature/step15-opentelemetry) | ⭕ Todo |
+### 🔍 [atlasctl](./atlasctl/README.md)
+A command-line tool for observing and managing Atlas applications:
+- **Multi-environment View**: See all deployments across clusters
+- **Real-time Status**: Current deployment status and health
+- **Flexible Output**: Table, JSON, and YAML formats
+- **Kubeconfig Support**: Connect to any Kubernetes cluster
 
-**Progress: 12/15 (80%) Complete** 🚀
+## 🏗️ Architecture
 
-## Progress Status
+```
+┌─────────────────────────────────────────────────────────────────────────────────┐
+│                           Atlas Platform Architecture                            │
+│                                                                                 │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │
+│  │     Dev     │    │    Stage    │    │    Prod     │    │    atlasctl     │  │
+│  │             │    │             │    │             │    │                 │  │
+│  │  AtlasApp   │───▶│  AtlasApp   │───▶│  AtlasApp   │    │  ┌─────────────┐ │  │
+│  │  v1.21.0    │    │  v1.21.0    │    │  v1.21.0    │    │  │ CLI Tool    │ │  │
+│  │  ready ✓    │    │  ready ✓    │    │  pending... │    │  │             │ │  │
+│  │             │    │             │    │             │    │  │ List/Watch  │ │  │
+│  │  ┌────────┐ │    │  ┌────────┐ │    │  ┌────────┐ │    │  │ Monitor     │ │  │
+│  │  │Deploy  │ │    │  │Deploy  │ │    │  │Deploy  │ │    │  │ Status      │ │  │
+│  │  │        │ │    │  │        │ │    │  │        │ │    │  └─────────────┘ │  │
+│  │  └────────┘ │    │  └────────┘ │    │  └────────┘ │    └─────────────────┘  │
+│  └─────────────┘    └─────────────┘    └─────────────┘                         │
+│           │                  │                  │                              │
+│           └──────────────────┼──────────────────┘                              │
+│                              │                                                 │
+│                    ┌─────────▼──────────┐                                      │
+│                    │  Atlas Controller  │                                      │
+│                    │                    │                                      │
+│                    │  ┌──────────────┐  │                                      │
+│                    │  │ Reconciler   │  │                                      │
+│                    │  │ Health Check │  │                                      │
+│                    │  │ Promotion    │  │                                      │
+│                    │  │ Logic        │  │                                      │
+│                    │  └──────────────┘  │                                      │
+│                    └────────────────────┘                                      │
+└─────────────────────────────────────────────────────────────────────────────────┘
+```
 
-### ✅ Completed Steps
+## 🚀 Quick Start
 
-- [x] **Step 1: Golang CLI Application using Cobra** — Initialize a CLI app with cobra-cli
-  * [x] Set up basic Cobra CLI structure
-  * [x] Create go-basic command with Kubernetes struct
-  * [x] Add version flag (--version, -v)
-  * [x] Create status command with cluster information
-  * [x] Add unit tests for struct methods
-  * [x] Update project documentation
+### 1. Prerequisites
+- Kubernetes cluster (1.19+)
+- kubectl configured
+- Go 1.21+ (for building from source)
 
-- [x] **Step 2: Zerolog for Log Levels** — Add structured logging with zerolog
-  * [x] Replace fmt.Println with structured logging in go-basic command
-  * [x] Configure different log levels (trace, debug, info, warn, error)
-  * [x] Add JSON log formatting for all commands
-  * [x] Implement structured fields (cluster_name, version, username, etc.)
-  * [x] Demonstrate zerolog fluent API with method chaining
+### 2. Install Atlas Controller
+```bash
+# Create namespaces
+kubectl create namespace dev
+kubectl create namespace stage
+kubectl create namespace prod
+kubectl create namespace atlas-system
 
-- [x] **Step 3: pflag for Log Level Flags** — Integrate pflag for CLI log level flags
-  * [x] Add --log-level flag to control zerolog output level
-  * [x] Implement flag validation for valid log levels (trace, debug, info, warn, error)
-  * [x] Configure dynamic log level switching with zerolog.SetGlobalLevel()
-  * [x] Add different output formats based on log level (console vs JSON)
-  * [x] Use PersistentFlags for global log level control across all commands
-  * [x] Demonstrate comprehensive logging at all verbosity levels
+# Install the controller
+cd atlas-controller
+kubectl apply -f config/crd/atlasapp.yaml
+kubectl apply -f config/rbac/role.yaml
+kubectl apply -f config/manager/manager.yaml
+```
 
-- [x] **Step 4: FastHTTP Server Command** — Add a server command with configurable port and log level
-  * [x] Add server command using FastHTTP instead of net/http
-  * [x] Implement configurable port and host flags (--port)
-  * [x] Add structured logging for HTTP requests and responses
-  * [x] Create simple routing system with switch statement
-  * [x] Add /health endpoint returning JSON status
-  * [x] Implement 404 handling with JSON error responses
-  * [x] Set appropriate Content-Type headers for different endpoints
+### 3. Install atlasctl
+```bash
+# Build from source
+cd atlasctl
+go build -o atlasctl main.go
 
-- [x] **Step 5: Makefile, Dockerfile, and GitHub Workflow** — Introduce build automation, secure containerization, CI/CD, and tests
-  * [x] Create Makefile for build automation (build, test, run, docker-build targets)
-  * [x] Add multi-stage Dockerfile for optimized containerization
-  * [x] Setup GitHub Actions workflow for comprehensive CI/CD pipeline
-  * [x] Implement Docker security scanning with Trivy
-  * [x] Add Helm chart packaging and artifact upload
-  * [x] Configure cross-platform build support
-  * [x] Add automated testing and code quality checks
+# Or download binary (when releases are available)
+curl -L https://github.com/your-org/atlas-platform/releases/latest/download/atlasctl-linux-amd64 -o atlasctl
+chmod +x atlasctl
+```
 
-- [x] **Step 6: List Kubernetes Deployments with client-go** — List deployments in the default namespace
-  * [x] Add client-go dependency for Kubernetes API access
-  * [x] Implement deployment listing functionality with detailed information
-  * [x] Add kubeconfig handling and cluster connectivity
-  * [x] Create colorful status indicators with emoji (✅ ⚠️ ❌ ⏸️)
-  * [x] Display replica status, container images, and deployment age
-  * [x] Add comprehensive summary statistics (ready deployments, running pods)
-  * [x] Implement structured logging for debugging and troubleshooting
-  * [x] Add professional deployment overview with human-readable formatting
+### 4. Deploy Your First Application
+```bash
+# Create an AtlasApp resource
+kubectl apply -f - <<EOF
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: atlas-dev
+  namespace: dev
+spec:
+  environment: dev
+  version: "1.21.0"
+  migrationId: 5
+  replicas: 2
+  autoPromote: true
+  nextEnvironment: stage
+  healthCheckPath: "/"
+EOF
+```
 
-- [x] **Step 7: Deployment Informer with client-go** — Watch and log Deployment events
-  * [x] Implement Kubernetes Informer pattern for real-time events
-  * [x] Add event watching and logging for deployment changes (ADD, UPDATE, DELETE)
-  * [x] Create event handlers with structured logging via zerolog
-  * [x] Integrate informer with FastHTTP server for concurrent operation
-  * [x] Support both kubeconfig and in-cluster authentication methods
-  * [x] Implement automatic cache synchronization with 30-second resync
-  * [x] Verify real-time event detection and proper informer lifecycle
-  * [x] Establish foundation for production Kubernetes controller development
+### 5. Monitor with atlasctl
+```bash
+# Watch your applications
+./atlasctl list --watch
 
-- [x] **Step 8: /deployments JSON API Endpoint** — Serve deployment names as JSON from the informer cache
-  * [x] Create HTTP endpoint to expose cached deployment data
-  * [x] Integrate informer cache with REST API responses
-  * [x] Add JSON serialization for deployment information
-  * [x] Implement request ID tracking with UUID for better debugging
-  * [x] Add /nodes endpoint for cluster-wide node information
-  * [x] Create dual informer setup (deployments + nodes) running concurrently
-  * [x] Add structured logging for API requests with contextual information
-  * [x] Demonstrate efficient API responses using in-memory informer cache
+# Example output:
+┼───────────┼───────┼─────────┼──────────────┼─────────┼──────────┼─────────────────────┼─────┼
+│ NAMESPACE │  APP  │ VERSION │ MIGRATION ID │ STATUS  │ REPLICAS │     LAST UPDATE     │ AGE │
+┼───────────┼───────┼─────────┼──────────────┼─────────┼──────────┼─────────────────────┼─────┼
+│ dev       │ atlas │ 1.21.0  │ 5            │ Running │ 2/2      │ 2025-07-03 02:00:00 │ 2m  │
+│ stage     │ atlas │ 1.21.0  │ 5            │ Running │ 2/2      │ 2025-07-03 02:01:00 │ 1m  │
+```
 
-- [x] **Step 9: controller-runtime Deployment Controller** — Reconcile Deployments and log events
-  * [x] Implement controller-runtime framework integration with manager
-  * [x] Create Deployment Reconciler with structured logging
-  * [x] Add concurrent controller-runtime manager alongside informers
-  * [x] Integrate controller-runtime with existing FastHTTP server architecture
-  * [x] Support both kubeconfig and in-cluster authentication for controller-runtime
-  * [x] Implement real-time reconciliation for deployment creation, updates, deletion
-  * [x] **BONUS: Event Monitoring System** — Added comprehensive Kubernetes Event tracking
-  * [x] Add Event Informer to monitor all cluster events in real-time
-  * [x] Create /events JSON API endpoint for event inspection
-  * [x] Implement structured event logging with emoji indicators (📅)
-  * [x] Add proper JSON marshalling for complex event data
-  * [x] Establish foundation for production Kubernetes operator development
+## 🎯 Use Cases
 
-- [x] **Step 10: Leader Election and Metrics** — Add HA and metrics endpoint to the controller manager
-  * [x] Implement Leader Election for High Availability controller deployment
-  * [x] Add Prometheus metrics endpoint with controller-runtime integration
-  * [x] Configure proper logging for controller-runtime with zap logger
+### 🔄 Automated DevOps Pipeline
+Perfect for teams wanting to automate their deployment pipeline:
+- **Developers** push code → **Atlas Controller** handles promotion
+- **Automatic testing** in each environment before promotion
+- **Manual approval gates** for production deployments
 
-- [x] **Step 11: FrontendPage CRD and Advanced Controller** — Define a custom resource and manage Deployments/ConfigMaps
-  * [x] Implement Custom Resource Definition (CRD) for FrontendPage with frontendpage.alios.io domain
-  * [x] Create Go types and deepcopy generation for custom resources
-  * [x] Build advanced FrontendPage Controller with sophisticated reconciliation logic
-  * [x] Add ConfigMap management for HTML content storage
-  * [x] Implement Deployment creation and updates with nginx containers
-  * [x] Configure OwnerReferences for automatic cascade deletion
-  * [x] Handle replica scaling and container image updates
-  * [x] Add comprehensive Mermaid architecture diagram showing CRD workflow
-  * [x] Establish foundation for production Kubernetes operators with custom resources
+### 📊 Multi-Environment Management
+Ideal for organizations managing multiple environments:
+- **Consistent deployments** across dev, stage, and prod
+- **Version tracking** and migration management
+- **Centralized monitoring** with atlasctl
 
-- [x] **Step 12: Platform API + Port.io Integration** — Transform controller into Platform as a Service with Port.io
-  * [x] Implement RESTful CRUD API for FrontendPage resources
-  * [x] Add Swagger UI documentation with interactive API explorer
-  * [x] **Port.io Integration**: Connect controller with Internal Developer Portal
-  * [x] Create Port.io Blueprint for FrontendPage schema definition
-  * [x] Build Self-Service Actions for developer self-service workflows
-  * [x] Implement bi-directional real-time sync (Port.io ↔ Kubernetes)
-  * [x] Add automatic status updates and metrics synchronization
-  * [x] Support webhook-driven deployments from Port.io UI
-  * [x] Create comprehensive Port.io documentation with troubleshooting
-  * [x] **Result**: Complete Platform as a Service with beautiful developer portal
+### 🛡️ Production Safety
+Built-in safety mechanisms for production deployments:
+- **Approval workflows** prevent accidental production deployments
+- **Health checks** ensure applications are ready before promotion
+- **Rollback capabilities** for quick recovery
 
-### 🔄 In Progress
+## 📋 Components Deep Dive
 
-- [ ] **Step 13: MCP Integration** — Integrate MCP server for multi-cluster management
-- [ ] **Step 14: JWT Authentication** — Secure API endpoints with JWT
-- [ ] **Step 15: OpenTelemetry Instrumentation** — Add distributed tracing with OpenTelemetry
+### Atlas Controller Features
+- 🔄 **Automatic Promotion**: Intelligent workflow management
+- 📊 **Custom Resources**: Kubernetes-native approach
+- 🔍 **Health Monitoring**: Continuous application health checks
+- 🛡️ **Production Gates**: Manual approval for critical deployments
+- 📈 **Status Tracking**: Real-time deployment status
+- 🎯 **Namespace Isolation**: Multi-tenant support
+
+[📖 Read the complete Atlas Controller documentation →](./atlas-controller/README.md)
+
+### atlasctl Features
+- 📊 **Multi-environment View**: See all deployments at once
+- 🔍 **Real-time Monitoring**: Live status updates
+- 🎯 **Flexible Output**: Table, JSON, YAML formats
+- 🔧 **Kubeconfig Support**: Connect to any cluster
+- 📈 **Migration Tracking**: Database version monitoring
+- 🚀 **Integration Ready**: Works with or without Atlas Controller
+
+[📖 Read the complete atlasctl documentation →](./atlasctl/README.md)
+
+## 🔧 Configuration Examples
+
+### Basic Development Workflow
+```yaml
+# dev-app.yaml
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: myapp-dev
+  namespace: dev
+spec:
+  environment: dev
+  version: "1.22.0"
+  migrationId: 6
+  replicas: 2
+  autoPromote: true
+  nextEnvironment: stage
+```
+
+### Production Deployment
+```yaml
+# prod-app.yaml
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: myapp-prod
+  namespace: prod
+spec:
+  environment: prod
+  version: "1.22.0"
+  migrationId: 6
+  replicas: 10
+  autoPromote: false
+  requireApproval: true
+  healthCheckPath: "/health"
+```
+
+### Multi-cluster Monitoring
+```bash
+# Monitor development cluster
+./atlasctl list --kubeconfig ~/.kube/dev-cluster
+
+# Monitor production cluster
+./atlasctl list --kubeconfig ~/.kube/prod-cluster
+
+# Watch all environments
+./atlasctl list --watch --kubeconfig ~/.kube/all-clusters
+```
+
+## 🛠️ Development
+
+### Repository Structure
+```
+atlas-platform/
+├── atlas-controller/          # Kubernetes controller
+│   ├── api/v1/                # CRD definitions
+│   ├── internal/controller/   # Controller logic
+│   ├── config/               # Kubernetes manifests
+│   └── README.md
+├── atlasctl/                 # CLI tool
+│   ├── cmd/                  # CLI commands
+│   ├── pkg/                  # Core logic
+│   └── README.md
+├── docs/                     # Additional documentation
+├── examples/                 # Usage examples
+└── README.md                 # This file
+```
+
+### Building from Source
+```bash
+# Build Atlas Controller
+cd atlas-controller
+go build -o bin/manager main.go
+docker build -t atlas-controller:latest .
+
+# Build atlasctl
+cd ../atlasctl
+go build -o atlasctl main.go
+```
+
+### Running Tests
+```bash
+# Test Atlas Controller
+cd atlas-controller
+go test ./...
+
+# Test atlasctl
+cd ../atlasctl
+go test ./...
+```
+
+## 🎯 Roadmap
+
+### Phase 1: Core Features ✅
+- [x] Atlas Controller with auto-promotion
+- [x] atlasctl for monitoring
+- [x] Basic health checks
+- [x] Production approval gates
+
+### Phase 2: Enhanced Features 🚧
+- [ ] GitOps integration (ArgoCD/Flux)
+- [ ] Webhook validation
+- [ ] Prometheus metrics
+- [ ] Slack/Teams notifications
+
+### Phase 3: Advanced Features 🔮
+- [ ] Blue/Green deployments
+- [ ] Canary releases
+- [ ] Multi-cluster support
+- [ ] Policy engine
+- [ ] Advanced rollback capabilities
+
+## 🤝 Contributing
+
+We welcome contributions! Please see our contributing guidelines:
+
+1. **Fork** the repository
+2. **Create** a feature branch: `git checkout -b feature/amazing-feature`
+3. **Commit** your changes: `git commit -m 'Add amazing feature'`
+4. **Push** to the branch: `git push origin feature/amazing-feature`
+5. **Open** a Pull Request
+
+### Development Guidelines
+- Follow Go best practices and idioms
+- Add comprehensive tests for new features
+- Update documentation for API changes
+- Ensure backward compatibility
+- Use conventional commit messages
+
+## 📄 License
+
+This project is licensed under the Apache License 2.0 - see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- Built with [Kubebuilder](https://kubebuilder.io/) for the controller framework
+- Uses [Cobra](https://github.com/spf13/cobra) for CLI functionality
+- Inspired by GitOps principles and Kubernetes best practices
+- Thanks to the Kubernetes community for excellent tooling and documentation
+
+## 📞 Support
+
+- 📖 **Documentation**: Check component-specific READMEs
+- 🐛 **Issues**: Report bugs via GitHub Issues
+- 💬 **Discussions**: Join GitHub Discussions for questions
+- 📧 **Contact**: Reach out to maintainers
+
+---
+
+**Ready to automate your deployments?** 🚀
+
+Get started with the [Atlas Controller](./atlas-controller/README.md) or [atlasctl](./atlasctl/README.md) today!

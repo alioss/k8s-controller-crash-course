@@ -1,0 +1,13 @@
+apiVersion: atlas.io/v1
+kind: AtlasApp
+metadata:
+  name: atlas-dev
+  namespace: dev
+spec:
+  environment: dev
+  version: "1.18.0"
+  migrationId: 6
+  replicas: 1
+  autoPromote: true
+  nextEnvironment: stage
+  healthCheckPath: "/"

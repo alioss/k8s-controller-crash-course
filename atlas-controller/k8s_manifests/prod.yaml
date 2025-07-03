@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: atlas
+  namespace: prod
+  labels:
+    app: atlas
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: atlas
+  template:
+    metadata:
+      labels:
+        app: atlas
+    spec:
+      containers:
+      - name: atlas
+        image: nginx:1.18.0  # ← version
+        env:
+        - name: MIGRATION_ID
+          value: "1"         # ← migration_id
